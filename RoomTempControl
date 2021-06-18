@@ -1,0 +1,39 @@
+// This #include statement was automatically added by the Particle IDE.
+#include <Adafruit_DHT.h>
+
+#define DHTPIN D5
+
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+int led = D6;
+
+void setup() {
+    dht.begin();
+    pinMode(led, OUTPUT);
+}
+
+float temp;
+
+void loop() {
+    // measure the current temperature and stored it in the temp variable
+    temp = dht.getTempCelcius();
+    
+    // acceptable range is 20 to 25 degrees
+    if (temp < 18 && temp > 0) // temp measured with DHT22 has been found to output 0 degree occasionally
+    {
+        // turn the heater (LED) on
+        digitalWrite(led, HIGH);
+    }
+    if (temp > 22 && temp < 40) //temp measured with DHT22 has been found to output 42 degrees occasionally
+    {
+        // turn the heater (LED) off
+        digitalWrite(led, LOW);
+    }
+    
+    // publish to the web for record purposes
+    Particle.publish("temp", String(temp), PRIVATE); 
+    
+    // measure the temperature every 10 seconds
+    delay(10000);
+}
